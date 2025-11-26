@@ -1,5 +1,5 @@
 import express from 'express'
-import { placeOrder, placeOrderRazorpay, placeOrderStripe, updateStatus, allOrders, userOrders, verifyStripe } from '../controllers/orderController.js'
+import { placeOrder, placeOrderRazorpay, placeOrderStripe, placeOrderFlutterwave, placeOrderPaystack, updateStatus, allOrders, userOrders, verifyStripe, verifyFlutterwave, verifyPaystack } from '../controllers/orderController.js'
 import adminAuth from '../middleware/adminAuth.js'
 import authUser from '../middleware/auth.js'
 
@@ -13,11 +13,15 @@ orderRouter.post('/status', adminAuth, updateStatus)
 orderRouter.post('/place', authUser, placeOrder)
 orderRouter.post('/stripe', authUser, placeOrderStripe)
 orderRouter.post('/razorpay', authUser, placeOrderRazorpay)
+orderRouter.post('/flutterwave', authUser, placeOrderFlutterwave)
+orderRouter.post('/paystack', authUser, placeOrderPaystack)
 
 // User features
 orderRouter.post('/userorders', authUser, userOrders)
 
 // Verify Payment
 orderRouter.post('/verifyStripe',authUser,verifyStripe)
+orderRouter.post('/verifyFlutterwave',authUser,verifyFlutterwave)
+orderRouter.post('/verifyPaystack',authUser,verifyPaystack)
 
 export default orderRouter;

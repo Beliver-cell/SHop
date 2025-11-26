@@ -92,6 +92,28 @@ const Placeorder = () => {
           }
           break;
 
+        case "flutterwave":
+          const responseFlutterwave = await axios.post(backendUrl + '/api/order/flutterwave',orderData,{headers:{token}})
+
+          if(responseFlutterwave.data.success) {
+            const {payment_link} = responseFlutterwave.data;
+            window.location.replace(payment_link);
+          } else {
+            toast.error(responseFlutterwave.data.message);
+          }
+          break;
+
+        case "paystack":
+          const responsePaystack = await axios.post(backendUrl + '/api/order/paystack',orderData,{headers:{token}})
+
+          if(responsePaystack.data.success) {
+            const {authorization_url} = responsePaystack.data;
+            window.location.replace(authorization_url);
+          } else {
+            toast.error(responsePaystack.data.message);
+          }
+          break;
+
         default:
           break;
       }
@@ -210,7 +232,7 @@ const Placeorder = () => {
         <div className="mt-12">
           <Title text1={"PAYMENT"} text2={"METHOD"} />
           {/* -----------Payment Method */}
-          <div className="flex gap-3 flex-col lg:flex-row">
+          <div className="flex gap-3 flex-col lg:flex-row lg:flex-wrap">
             <div
               onClick={() => setMethod("stripe")}
               className=" flex items-center gap-3 border border-gray-200 p-2 px-3 cursor-pointer"
@@ -220,7 +242,35 @@ const Placeorder = () => {
                   method === "stripe" ? "bg-green-400" : ""
                 }`}
               ></p>
-              <img className="h-5 mx-4" src={assets.stripe_logo} alt="" />
+              <img className="h-5 mx-4" src={assets.stripe_logo} alt="Stripe" />
+            </div>
+
+            <div
+              onClick={() => setMethod("flutterwave")}
+              className=" flex items-center gap-3 border border-gray-200 p-2 px-3 cursor-pointer"
+            >
+              <p
+                className={`min-w-3.5 h-3.5 border rounded-full ${
+                  method === "flutterwave" ? "bg-green-400" : ""
+                }`}
+              ></p>
+              <p className="text-gray-500 text-sm font-medium mx-4">
+                FLUTTERWAVE
+              </p>
+            </div>
+
+            <div
+              onClick={() => setMethod("paystack")}
+              className=" flex items-center gap-3 border border-gray-200 p-2 px-3 cursor-pointer"
+            >
+              <p
+                className={`min-w-3.5 h-3.5 border rounded-full ${
+                  method === "paystack" ? "bg-green-400" : ""
+                }`}
+              ></p>
+              <p className="text-gray-500 text-sm font-medium mx-4">
+                PAYSTACK
+              </p>
             </div>
 
             <div
