@@ -111,16 +111,14 @@ The application is already running with two workflows:
 - **Frontend**: Running on port 5000 (customer store)
 - **Backend**: Running on port 8000 (API server)
 
-### Running the Admin Panel
-The admin panel is configured but not set as an automatic workflow. To run it:
-1. Open a new terminal in Replit
-2. Run: `cd "Fantasy Store/admin" && npm run dev`
-3. The admin panel will start on port 5174
-4. The admin panel is configured with:
-   - Host binding to `0.0.0.0` for external access in Replit
-   - Vite proxy to forward `/api/*` requests to the backend on port 8000
-   - Proper HMR (Hot Module Replacement) settings for Replit environment
-5. Access the admin panel through the URL shown in the terminal output
+### Accessing the Admin Panel
+The admin panel now runs as an automatic workflow on port 5173:
+- **Admin Panel URL**: Available when you click "Webview" in the Replit sidebar (or use the Network tab URL with port 5173)
+- The admin panel is configured with:
+  - Host binding to `0.0.0.0` for external access in Replit
+  - Vite proxy to forward `/api/*` requests to the backend on port 8000
+  - Proper HMR (Hot Module Replacement) settings for Replit environment
+  - Production-ready settings
 
 ### Accessing the Application
 - **Frontend Store**: Click the "Webview" button or open the Replit preview

@@ -13,9 +13,17 @@ const app = express()
 const port = process.env.PORT || 4000
 connectDB();
 connectCloudinary();
+
 // middlewares
 app.use(express.json())
-app.use(cors())
+
+// CORS Configuration for production
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : ['http://localhost:5000', 'http://localhost:5173', 'http://0.0.0.0:5000', 'http://0.0.0.0:5173'],
+  credentials: true,
+  optionsSuccessStatus: 200
+}
+app.use(cors(corsOptions))
 
 // api endpoints
 app.use('/api/user', userRouter);
