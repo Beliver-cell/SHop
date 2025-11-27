@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import { generateOTP, sendVerificationOTP, sendResetPasswordOTP } from "../config/email.js";
 
 const createToken = (id) => {
-    return jwt.sign({ id }, process.env.jwtSecret)
+    return jwt.sign({ id }, process.env.JWT_SECRET || process.env.jwtSecret, { expiresIn: '7d' })
 }
 
 const generateToken = () => {
