@@ -17,34 +17,46 @@ const Verify = () => {
   const verifyPayment = async () => {
     try {
       if (!token) {
+        setTimeout(() => navigate("/login"), 2000);
+        return null;
+      }
+
+      if (!orderId) {
+        setTimeout(() => navigate("/cart"), 2000);
         return null;
       }
 
       let response;
 
-      if (method === "paystack" || reference) {
+      if (method === "paystack") {
+        if (!reference) {
+          toast.error("Payment reference not found. Please try again.");
+          setTimeout(() => navigate("/cart"), 2000);
+          return;
+        }
+
         response = await axios.post(
           backendUrl + "/api/order/verifyPaystack",
-          { reference, orderId },
+          { reference, orderId, userId: token },
           { headers: { token } }
         );
-      } else {
-        navigate("/cart");
-        return;
-      }
 
-      if (response.data.success) {
-        setCartItems({});
-        toast.success("Payment successful! Thank you for your order.");
-        navigate("/orders");
+        if (response.data.success) {
+          setCartItems({});
+          toast.success("✓ Payment successful! Thank you for your order.");
+          setTimeout(() => navigate("/orders"), 2000);
+        } else {
+          toast.error(response.data.message || "Payment verification failed. Your order has been cancelled.");
+          setTimeout(() => navigate("/cart"), 2000);
+        }
       } else {
-        toast.error(response.data.message || "Payment verification failed");
-        navigate("/cart");
+        toast.error("Invalid payment method");
+        setTimeout(() => navigate("/cart"), 2000);
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
-      navigate("/cart");
+      toast.error(error.message || "Verification error. Please contact support.");
+      setTimeout(() => navigate("/cart"), 3000);
     } finally {
       setVerifying(false);
     }
@@ -55,16 +67,20 @@ const Verify = () => {
   }, [token]);
 
   return (
-    <div className="min-h-[60vh] flex flex-col items-center justify-center">
+    <div className="min-h-[70vh] flex flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="text-center py-8">
         {verifying ? (
           <>
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4"></div>
-            <p className="text-lg text-gray-600">Verifying your payment...</p>
-            <p className="text-sm text-gray-400 mt-2">Please wait while we confirm your transaction.</p>
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-300 border-t-black mx-auto mb-6"></div>
+            <p className="text-2xl font-semibold text-gray-800">Verifying Your Payment</p>
+            <p className="text-sm text-gray-500 mt-3">We're confirming your Paystack transaction...</p>
+            <p className="text-xs text-gray-400 mt-2">This usually takes less than 10 seconds</p>
           </>
         ) : (
-          <p className="text-lg text-gray-600">Redirecting...</p>
+          <div>
+            <p className="text-lg text-gray-600">Redirecting you...</p>
+            <p className="text-sm text-gray-400 mt-2">Please wait a moment</p>
+          </div>
         )}
       </div>
     </div>

@@ -2,6 +2,7 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
 import SearchBar from "./components/SearchBar.jsx";
+import Chatbot from "./components/Chatbot.jsx";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -25,6 +26,7 @@ const App = () => {
       <ToastContainer/>
       <Navbar />
       <SearchBar/>
+      <Chatbot />
 
       <Routes>
         <Route path="/" element={<Home />} />
