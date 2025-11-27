@@ -8,6 +8,8 @@ import Orders from "./Orders";
 import Placeorder from "./Placeorder";
 import Product from "./Product";
 import Verify from "./Verify";
+import VerifyEmail from "./VerifyEmail";
+import ResetPassword from "./ResetPassword";
 
 export {
   Home,
@@ -19,5 +21,7 @@ export {
   Placeorder,
   Product,
   Login,
-  Verify
+  Verify,
+  VerifyEmail,
+  ResetPassword
 };

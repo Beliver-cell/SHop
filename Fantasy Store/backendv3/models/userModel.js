@@ -6,10 +6,10 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true },
     cartData: { type: Object, default: {} },
     isVerified: { type: Boolean, default: false },
-    verificationToken: { type: String, default: null },
-    verificationTokenExpire: { type: Date, default: null },
-    resetPasswordToken: { type: String, default: null },
-    resetPasswordExpire: { type: Date, default: null },
+    verificationOTP: { type: String, default: null },
+    verificationOTPExpire: { type: Date, default: null },
+    resetPasswordOTP: { type: String, default: null },
+    resetPasswordOTPExpire: { type: Date, default: null },
     createdAt: { type: Date, default: Date.now }
 }, {minimize: false})
 

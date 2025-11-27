@@ -21,8 +21,9 @@ const Login = () => {
         });
 
         if (response.data.success) {
-          setToken(response.data.token);
-          localStorage.setItem("token", response.data.token);
+          toast.success("Check your email for verification code");
+          localStorage.setItem("pendingVerificationId", response.data.userId);
+          navigate("/verify-email");
         } else {
           toast.error(response.data.message);
         }
@@ -31,7 +32,6 @@ const Login = () => {
           email,
           password,
         });
-        console.log(response.data);
 
         if (response.data.success) {
           setToken(response.data.token);
@@ -94,7 +94,14 @@ const Login = () => {
       />
 
       <div className="w-full flex justify-between text-sm mt-[-8px]">
-        <p className="cursor-pointer">Forgot your password</p>
+        {currState === "Login" && (
+          <p onClick={() => navigate('/reset-password')} className="cursor-pointer hover:underline">
+            Forgot your password
+          </p>
+        )}
+        {!currState === "Login" && (
+          <div />
+        )}
 
         {currState === "Login" ? (
           <p

@@ -16,7 +16,9 @@ import {
   Orders,
   Placeorder,
   Product,
-  Verify
+  Verify,
+  VerifyEmail,
+  ResetPassword
 } from "./pages/source.js";
 import Footer from "./components/Footer.jsx";
 
@@ -36,6 +38,8 @@ const App = () => {
         <Route path="/products/:productId" element={<Product />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/place-order" element={<Placeorder />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/verify" element={<Verify/>}/>

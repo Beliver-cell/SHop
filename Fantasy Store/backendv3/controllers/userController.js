@@ -2,8 +2,7 @@ import userModel from "../models/userModel.js";
 import validator from 'validator';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import crypto from 'crypto';
-import { sendVerificationEmail, sendResetPasswordEmail } from "../config/email.js";
+import { generateOTP, sendVerificationOTP, sendResetPasswordOTP } from "../config/email.js";
 
 const createToken = (id) => {
     return jwt.sign({ id }, process.env.jwtSecret)
@@ -56,25 +55,26 @@ const registerUser = async (req, res) => {
         
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
-        const verificationToken = generateToken();
+        const verificationOTP = generateOTP();
 
         const newUser = new userModel({
             name,
             email,
             password: hashedPassword,
-            verificationToken: verificationToken,
-            verificationTokenExpire: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+            verificationOTP: verificationOTP,
+            verificationOTPExpire: new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
         });
         
         const user = await newUser.save();
         
-        // Send verification email
-        const emailSent = await sendVerificationEmail(email, verificationToken);
+        // Send verification OTP email
+        const emailSent = await sendVerificationOTP(email, verificationOTP);
         
         if (emailSent) {
             res.json({ 
-                success: true, 
-                message: "Account created! Check your email to verify your account.",
+                success: true,
+                userId: user._id,
+                message: "Account created! Check your email for verification code.",
                 requiresVerification: true 
             });
         } else {
@@ -90,30 +90,70 @@ const registerUser = async (req, res) => {
     }
 }
 
-// Verify Email
+// Verify Email OTP
 const verifyEmail = async (req, res) => {
     try {
-        const { token } = req.body;
+        const { userId, otp } = req.body;
         
-        if (!token) {
-            return res.json({ success: false, message: "No verification token provided" });
+        if (!userId || !otp) {
+            return res.json({ success: false, message: "User ID and OTP required" });
         }
 
-        const user = await userModel.findOne({
-            verificationToken: token,
-            verificationTokenExpire: { $gt: Date.now() }
-        });
+        const user = await userModel.findById(userId);
 
         if (!user) {
-            return res.json({ success: false, message: "Invalid or expired verification token" });
+            return res.json({ success: false, message: "User not found" });
+        }
+
+        if (user.verificationOTP !== otp) {
+            return res.json({ success: false, message: "Invalid OTP" });
+        }
+
+        if (new Date() > user.verificationOTPExpire) {
+            return res.json({ success: false, message: "OTP expired. Request a new one." });
         }
 
         user.isVerified = true;
-        user.verificationToken = null;
-        user.verificationTokenExpire = null;
+        user.verificationOTP = null;
+        user.verificationOTPExpire = null;
         await user.save();
 
-        res.json({ success: true, message: "Email verified successfully! You can now login." });
+        const token = createToken(user._id);
+        res.json({ success: true, token, message: "Email verified! You can now login." });
+    }
+    catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+}
+
+// Resend Verification OTP
+const resendVerificationOTP = async (req, res) => {
+    try {
+        const { userId } = req.body;
+        
+        if (!userId) {
+            return res.json({ success: false, message: "User ID required" });
+        }
+
+        const user = await userModel.findById(userId);
+
+        if (!user) {
+            return res.json({ success: false, message: "User not found" });
+        }
+
+        const newOTP = generateOTP();
+        user.verificationOTP = newOTP;
+        user.verificationOTPExpire = new Date(Date.now() + 10 * 60 * 1000);
+        await user.save();
+
+        const emailSent = await sendVerificationOTP(user.email, newOTP);
+        
+        if (emailSent) {
+            res.json({ success: true, message: "New verification code sent to your email" });
+        } else {
+            res.json({ success: false, message: "Failed to send email" });
+        }
     }
     catch (error) {
         console.log(error);
@@ -131,15 +171,15 @@ const forgotPassword = async (req, res) => {
             return res.json({ success: false, message: "User not found" });
         }
 
-        const resetToken = generateToken();
-        user.resetPasswordToken = resetToken;
-        user.resetPasswordExpire = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+        const resetOTP = generateOTP();
+        user.resetPasswordOTP = resetOTP;
+        user.resetPasswordOTPExpire = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
         await user.save();
 
-        const emailSent = await sendResetPasswordEmail(email, resetToken);
+        const emailSent = await sendResetPasswordOTP(email, resetOTP);
         
         if (emailSent) {
-            res.json({ success: true, message: "Password reset link sent to your email" });
+            res.json({ success: true, userId: user._id, message: "Password reset code sent to your email" });
         } else {
             return res.json({ success: false, message: "Failed to send reset email" });
         }
@@ -150,34 +190,39 @@ const forgotPassword = async (req, res) => {
     }
 }
 
-// Reset Password
+// Reset Password with OTP
 const resetPassword = async (req, res) => {
     try {
-        const { token, newPassword } = req.body;
+        const { userId, otp, newPassword } = req.body;
         
-        if (!token || !newPassword) {
-            return res.json({ success: false, message: "Token and new password required" });
+        if (!userId || !otp || !newPassword) {
+            return res.json({ success: false, message: "All fields required" });
         }
 
         if (newPassword.length < 8) {
             return res.json({ success: false, message: "Password must be at least 8 characters" });
         }
 
-        const user = await userModel.findOne({
-            resetPasswordToken: token,
-            resetPasswordExpire: { $gt: Date.now() }
-        });
+        const user = await userModel.findById(userId);
 
         if (!user) {
-            return res.json({ success: false, message: "Invalid or expired reset token" });
+            return res.json({ success: false, message: "User not found" });
+        }
+
+        if (user.resetPasswordOTP !== otp) {
+            return res.json({ success: false, message: "Invalid OTP" });
+        }
+
+        if (new Date() > user.resetPasswordOTPExpire) {
+            return res.json({ success: false, message: "OTP expired. Request a new one." });
         }
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(newPassword, salt);
 
         user.password = hashedPassword;
-        user.resetPasswordToken = null;
-        user.resetPasswordExpire = null;
+        user.resetPasswordOTP = null;
+        user.resetPasswordOTPExpire = null;
         await user.save();
 
         res.json({ success: true, message: "Password reset successfully! You can now login." });
@@ -206,4 +251,4 @@ const adminLogin = async (req, res) => {
     }
 }
 
-export { loginUser, registerUser, verifyEmail, forgotPassword, resetPassword, adminLogin };
+export { loginUser, registerUser, verifyEmail, resendVerificationOTP, forgotPassword, resetPassword, adminLogin };
