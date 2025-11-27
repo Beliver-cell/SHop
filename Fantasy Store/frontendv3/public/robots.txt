@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+Disallow: /cart
+Disallow: /login
+Disallow: /place-order
+Disallow: /verify
+Disallow: /orders
+
+Sitemap: https://fantasyluxe.com/sitemap.xml
+
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 2

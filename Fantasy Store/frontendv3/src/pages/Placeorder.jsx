@@ -1,13 +1,11 @@
 import React, { useContext, useState } from "react";
 import Title from "../components/Title";
 import CartTotal from "../components/CartTotal";
-import { assets } from "../assets/assets";
 import { ShopContext } from "../context/Shopcontext";
 import { toast } from "react-toastify";
 import axios from "axios";
 
 const Placeorder = () => {
-  const [method, setMethod] = useState("cod");
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -65,63 +63,20 @@ const Placeorder = () => {
         amount: totalcartAmount() + deliveryFee,
       };
 
-      switch (method) {
-        case "cod":
-          const response = await axios.post(
-            backendUrl + "/api/order/place",
-            orderData,
-            { headers: { token } }
-          );
+      const responsePaystack = await axios.post(backendUrl + '/api/order/paystack', orderData, { headers: { token } });
 
-          if (response.data.success) {
-            setCartItems({});
-            navigate("/orders");
-          } else {
-            toast.error(response.data.message);
-          }
-          break;
-
-        case "stripe":
-          const responseStripe = await axios.post(backendUrl + '/api/order/stripe',orderData,{headers:{token}})
-
-          if(responseStripe.data.success) {
-            const {session_url} = responseStripe.data;
-            window.location.replace(session_url);
-          } else {
-            toast.error(responseStripe.data.message);
-          }
-          break;
-
-        case "flutterwave":
-          const responseFlutterwave = await axios.post(backendUrl + '/api/order/flutterwave',orderData,{headers:{token}})
-
-          if(responseFlutterwave.data.success) {
-            const {payment_link} = responseFlutterwave.data;
-            window.location.replace(payment_link);
-          } else {
-            toast.error(responseFlutterwave.data.message);
-          }
-          break;
-
-        case "paystack":
-          const responsePaystack = await axios.post(backendUrl + '/api/order/paystack',orderData,{headers:{token}})
-
-          if(responsePaystack.data.success) {
-            const {authorization_url} = responsePaystack.data;
-            window.location.replace(authorization_url);
-          } else {
-            toast.error(responsePaystack.data.message);
-          }
-          break;
-
-        default:
-          break;
+      if (responsePaystack.data.success) {
+        const { authorization_url } = responsePaystack.data;
+        window.location.replace(authorization_url);
+      } else {
+        toast.error(responsePaystack.data.message || "Payment initialization failed");
       }
     } catch (error) {
       console.log(error.message);
       toast.error(error.message);
     }
   };
+
   return (
     <form
       onSubmit={onSubmitHandler}
@@ -231,68 +186,31 @@ const Placeorder = () => {
 
         <div className="mt-12">
           <Title text1={"PAYMENT"} text2={"METHOD"} />
-          {/* -----------Payment Method */}
-          <div className="flex gap-3 flex-col lg:flex-row lg:flex-wrap">
-            <div
-              onClick={() => setMethod("stripe")}
-              className=" flex items-center gap-3 border border-gray-200 p-2 px-3 cursor-pointer"
-            >
-              <p
-                className={`min-w-3.5 h-3.5 border rounded-full ${
-                  method === "stripe" ? "bg-green-400" : ""
-                }`}
-              ></p>
-              <img className="h-5 mx-4" src={assets.stripe_logo} alt="Stripe" />
+          {/* -----------Payment Method - Paystack Only */}
+          <div className="flex gap-3 flex-col">
+            <div className="flex items-center gap-3 border-2 border-green-500 bg-green-50 p-4 px-5 rounded-lg">
+              <div className="min-w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="flex items-center gap-3">
+                <svg className="h-6 w-6 text-green-600" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+                <span className="text-gray-700 font-semibold text-base">Pay with Paystack</span>
+              </div>
             </div>
-
-            <div
-              onClick={() => setMethod("flutterwave")}
-              className=" flex items-center gap-3 border border-gray-200 p-2 px-3 cursor-pointer"
-            >
-              <p
-                className={`min-w-3.5 h-3.5 border rounded-full ${
-                  method === "flutterwave" ? "bg-green-400" : ""
-                }`}
-              ></p>
-              <p className="text-gray-500 text-sm font-medium mx-4">
-                FLUTTERWAVE
-              </p>
-            </div>
-
-            <div
-              onClick={() => setMethod("paystack")}
-              className=" flex items-center gap-3 border border-gray-200 p-2 px-3 cursor-pointer"
-            >
-              <p
-                className={`min-w-3.5 h-3.5 border rounded-full ${
-                  method === "paystack" ? "bg-green-400" : ""
-                }`}
-              ></p>
-              <p className="text-gray-500 text-sm font-medium mx-4">
-                PAYSTACK
-              </p>
-            </div>
-
-            <div
-              onClick={() => setMethod("cod")}
-              className=" flex items-center gap-3 border border-gray-200 p-2 px-3 cursor-pointer"
-            >
-              <p
-                className={`min-w-3.5 h-3.5 border rounded-full ${
-                  method === "cod" ? "bg-green-400" : ""
-                }`}
-              ></p>
-              <p className="text-gray-500 text-sm font-medium mx-4">
-                CASH ON DELIVERY
-              </p>
-            </div>
+            <p className="text-sm text-gray-500 mt-2">
+              Secure payment powered by Paystack. Pay with card, bank transfer, or USSD.
+            </p>
           </div>
           <div className="w-full text-end mt-8">
             <button
-              className="bg-black text-white px-16 py-3 text-sm cursor-pointer"
+              className="bg-black text-white px-16 py-3 text-sm cursor-pointer hover:bg-gray-800 transition-colors"
               type="submit"
             >
-              PLACE ORDER
+              PAY NOW
             </button>
           </div>
         </div>
