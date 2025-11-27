@@ -37,7 +37,6 @@ export const ShopContextProvider = ({ children }) => {
     }
 
     if (!itemId) {
-      console.error("Item ID is missing");
       return;
     }
 
@@ -51,7 +50,6 @@ export const ShopContextProvider = ({ children }) => {
           { headers: { token } }
         );
       } catch (error) {
-        console.log(error);
         toast.error(error.message);
       }
     }
@@ -66,7 +64,7 @@ export const ShopContextProvider = ({ children }) => {
             totalCount += cartItems[items][item];
           }
         } catch (err) {
-          console.log("Error occured !");
+          // Cart calculation error
         }
       }
     }
@@ -108,7 +106,7 @@ export const ShopContextProvider = ({ children }) => {
             totalAmount += itemInfo.price * cartItems[items][item];
           }
         } catch (err) {
-          console.log(err.message);
+          // Calculation error
         }
       }
     }
@@ -125,7 +123,6 @@ export const ShopContextProvider = ({ children }) => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.log(error);
       toast.error(error.message);
     }
   };
@@ -142,7 +139,6 @@ export const ShopContextProvider = ({ children }) => {
         setCartItems(response.data.response);
       }
     } catch (error) {
-      console.log(error);
       toast.error(error.message);
     }
   };
@@ -150,10 +146,6 @@ export const ShopContextProvider = ({ children }) => {
   useEffect(() => {
     getProductsData();
   }, []);
-
-  useEffect(() => {
-    console.log("useEffect: ",products)
-  }, [products]);
 
 
   useEffect(() => {

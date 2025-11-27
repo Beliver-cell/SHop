@@ -33,7 +33,6 @@ const loginUser = async (req, res) => {
         }
     }
     catch (err) {
-        console.error(err);
         res.json({ success: false, message: err.message });
     }
 }
@@ -85,7 +84,6 @@ const registerUser = async (req, res) => {
 
     }
     catch (error){
-        console.log(error);
         res.json({success: false, message: error.message})
     }
 }
@@ -122,7 +120,6 @@ const verifyEmail = async (req, res) => {
         res.json({ success: true, token, message: "Email verified! You can now login." });
     }
     catch (error) {
-        console.log(error);
         res.json({ success: false, message: error.message });
     }
 }
@@ -156,7 +153,6 @@ const resendVerificationOTP = async (req, res) => {
         }
     }
     catch (error) {
-        console.log(error);
         res.json({ success: false, message: error.message });
     }
 }
@@ -185,7 +181,6 @@ const forgotPassword = async (req, res) => {
         }
     }
     catch (error) {
-        console.log(error);
         res.json({ success: false, message: error.message });
     }
 }
@@ -228,7 +223,6 @@ const resetPassword = async (req, res) => {
         res.json({ success: true, message: "Password reset successfully! You can now login." });
     }
     catch (error) {
-        console.log(error);
         res.json({ success: false, message: error.message });
     }
 }
@@ -246,7 +240,6 @@ const adminLogin = async (req, res) => {
         }
     }
     catch (error) {
-        console.log(error);
         res.json({ success: false, message: error.message });
     }
 }

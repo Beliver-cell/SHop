@@ -72,7 +72,6 @@ const Placeorder = () => {
         toast.error(responsePaystack.data.message || "Payment initialization failed");
       }
     } catch (error) {
-      console.log(error.message);
       toast.error(error.message);
     }
   };

@@ -54,7 +54,6 @@ const Verify = () => {
         setTimeout(() => navigate("/cart"), 2000);
       }
     } catch (error) {
-      console.log(error);
       toast.error(error.message || "Verification error. Please contact support.");
       setTimeout(() => navigate("/cart"), 3000);
     } finally {

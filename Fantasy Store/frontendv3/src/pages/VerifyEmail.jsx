@@ -59,7 +59,6 @@ const VerifyEmail = () => {
         toast.error(response.data.message || 'Verification failed');
       }
     } catch (error) {
-      console.log(error);
       toast.error('Verification error. Please try again.');
     } finally {
       setLoading(false);

@@ -18,7 +18,6 @@ const Orders = () => {
         {},
         { headers: { token } }
       );
-      console.log(response);
       if (response.data.success) {
         const orderItems = [];
         response.data.orders.map((order) => {
@@ -29,14 +28,13 @@ const Orders = () => {
             item["data"] = order.date;
 
             orderItems.push(item)
-            console.log(orderItems)
           });
         });
 
         setOrderData(orderItems.reverse());
       }
     } catch (error) {
-      console.log(error);
+      // Error loading orders
     }
   };
 

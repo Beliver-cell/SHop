@@ -9,7 +9,6 @@ const Latescollection = () => {
 
   useEffect(() => {
     setLatestProduct(products.slice(0, 10));
-    console.log(products)
   }, [products]);
 
   return (

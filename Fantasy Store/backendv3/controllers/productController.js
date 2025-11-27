@@ -58,7 +58,6 @@ const addProduct = async (req, res) => {
 
     } 
     catch (error){
-        console.log(error);
         res.json({success:false, message: error.message})
     }
 }
@@ -70,7 +69,6 @@ const listProducts = async (req, res) => {
         res.json({success:true, products})
     }
     catch (error){
-        console.log(error);
         res.json({success:false, message: error.message})
     }
 }
@@ -88,7 +86,7 @@ const removeProduct = async (req, res) => {
                     try {
                         await cloudinary.uploader.destroy(pid);
                     } catch (e) {
-                        console.log('Cloudinary destroy error', e.message);
+                        // Cloudinary destroy error - non-critical
                     }
                 })
             );
@@ -98,7 +96,6 @@ const removeProduct = async (req, res) => {
         res.json({ success: true, message: "Product removed"})
     }
     catch (error) {
-        console.log(error);
         res.json({ success: false, message: error.message })
     }
 }
@@ -111,7 +108,6 @@ const singleProduct = async (req, res) => {
         res.json({success: true, product})
     }
     catch (error){
-        console.log(error)
         res.json({success:false, message: error.message})
     }
 }
@@ -131,7 +127,7 @@ const removeCollection = async (req, res) => {
                             try {
                                 await cloudinary.uploader.destroy(pid);
                             } catch (e) {
-                                console.log('Cloudinary destroy error', e.message);
+                                // Cloudinary destroy error - non-critical
                             }
                         })
                     );
@@ -143,7 +139,6 @@ const removeCollection = async (req, res) => {
         res.json({ success: true, message: `Removed ${result.deletedCount} product(s) from collection ${category}` });
     }
     catch (error) {
-        console.log(error);
         res.json({ success: false, message: error.message });
     }
 }

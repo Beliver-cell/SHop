@@ -4,7 +4,6 @@ import userModel from "../models/userModel.js";
 const addToCart = async (req, res) => {
   try {
     const { userId,itemId, size } = req.body;
-    console.log("Incoming request body:", req.body);
 
     if (!userId || !itemId || !size) {
       return res.status(400).json({
@@ -39,7 +38,6 @@ const addToCart = async (req, res) => {
       response: "Product added to cart.",
     });
   } catch (error) {
-    console.log(error);
     res.json({
       success: false,
       response: error.message,
