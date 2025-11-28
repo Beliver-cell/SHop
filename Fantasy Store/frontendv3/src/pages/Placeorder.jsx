@@ -63,13 +63,13 @@ const Placeorder = () => {
         amount: totalcartAmount() + deliveryFee,
       };
 
-      const responsePaystack = await axios.post(backendUrl + '/api/order/paystack', orderData, { headers: { token } });
+      const responseFlutterwave = await axios.post(backendUrl + '/api/order/flutterwave', orderData, { headers: { token } });
 
-      if (responsePaystack.data.success) {
-        const { authorization_url } = responsePaystack.data;
-        window.location.replace(authorization_url);
+      if (responseFlutterwave.data.success) {
+        const { link } = responseFlutterwave.data;
+        window.location.replace(link);
       } else {
-        toast.error(responsePaystack.data.message || "Payment initialization failed");
+        toast.error(responseFlutterwave.data.message || "Payment initialization failed");
       }
     } catch (error) {
       toast.error(error.message);

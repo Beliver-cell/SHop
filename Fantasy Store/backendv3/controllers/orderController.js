@@ -29,7 +29,7 @@ const placeOrder = async (req, res) => {
   }
 };
 
-const placeOrderPaystack = async (req, res) => {
+const placeOrderFlutterwave = async (req, res) => {
   try {
     const { userId, items, amount, address } = req.body;
     const { origin } = req.headers;
@@ -39,7 +39,7 @@ const placeOrderPaystack = async (req, res) => {
       items,
       amount,
       address,
-      paymentMethod: "Paystack",
+      paymentMethod: "Flutterwave",
       payment: false,
       date: Date.now(),
     };
@@ -47,56 +47,46 @@ const placeOrderPaystack = async (req, res) => {
     const newOrder = new orderModel(orderData);
     await newOrder.save();
 
-    const paystackPayload = {
-      email: address.email,
-      amount: Math.round(amount * 100),
+    const flutterwavePayload = {
+      tx_ref: newOrder._id.toString(),
+      amount: amount,
       currency: currency,
-      callback_url: `${origin}/verify?orderId=${newOrder._id}&method=paystack`,
-      metadata: {
-        order_id: newOrder._id.toString(),
-        user_id: userId,
-        custom_fields: [
-          {
-            display_name: "Order ID",
-            variable_name: "order_id",
-            value: newOrder._id.toString()
-          },
-          {
-            display_name: "Customer Name",
-            variable_name: "customer_name",
-            value: `${address.firstName} ${address.lastName}`
-          }
-        ]
+      redirect_url: `${origin}/verify?orderId=${newOrder._id}&method=flutterwave`,
+      customer: {
+        email: address.email,
+        name: `${address.firstName} ${address.lastName}`,
+        phonenumber: address.phone,
+      },
+      customizations: {
+        title: "Fantasy Luxe Payment",
+        logo: "https://fantasyluxe.com/logo.png",
       },
     };
 
     const response = await axios.post(
-      "https://api.paystack.co/transaction/initialize",
-      paystackPayload,
+      "https://api.flutterwave.com/v3/payments",
+      flutterwavePayload,
       {
         headers: {
-          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+          Authorization: `Bearer ${process.env.FLUTTERWAVE_SECRET_KEY}`,
           "Content-Type": "application/json",
         },
       }
     );
 
-    if (response.data.status) {
+    if (response.data.status === "success") {
       res.json({
         success: true,
-        authorization_url: response.data.data.authorization_url,
-        access_code: response.data.data.access_code,
-        reference: response.data.data.reference,
+        link: response.data.data.link,
       });
     } else {
       await orderModel.findByIdAndDelete(newOrder._id);
       res.json({
         success: false,
-        message: "Failed to create Paystack payment",
+        message: "Failed to create Flutterwave payment",
       });
     }
   } catch (error) {
-    console.log(error);
     res.json({
       success: false,
       message: error.message,
@@ -104,20 +94,20 @@ const placeOrderPaystack = async (req, res) => {
   }
 };
 
-const verifyPaystack = async (req, res) => {
-  const { reference, orderId, userId } = req.body;
+const verifyFlutterwave = async (req, res) => {
+  const { transaction_id, orderId, userId } = req.body;
 
   try {
     const response = await axios.get(
-      `https://api.paystack.co/transaction/verify/${reference}`,
+      `https://api.flutterwave.com/v3/transactions/${transaction_id}/verify`,
       {
         headers: {
-          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+          Authorization: `Bearer ${process.env.FLUTTERWAVE_SECRET_KEY}`,
         },
       }
     );
 
-    if (response.data.status && response.data.data.status === "success") {
+    if (response.data.status === "success" && response.data.data.status === "successful") {
       await orderModel.findByIdAndUpdate(orderId, { payment: true });
       await userModel.findByIdAndUpdate(userId, { cartData: {} });
       res.json({ success: true });
@@ -126,7 +116,6 @@ const verifyPaystack = async (req, res) => {
       res.json({ success: false, message: "Payment verification failed" });
     }
   } catch (error) {
-    console.log(error);
     res.json({
       success: false,
       message: error.message,
@@ -168,9 +157,9 @@ const updateStatus = async (req, res) => {
 
 export {
   placeOrder,
-  placeOrderPaystack,
+  placeOrderFlutterwave,
   allOrders,
   updateStatus,
   userOrders,
-  verifyPaystack,
+  verifyFlutterwave,
 };

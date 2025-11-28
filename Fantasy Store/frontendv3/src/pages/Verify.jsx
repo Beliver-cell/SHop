@@ -28,16 +28,17 @@ const Verify = () => {
 
       let response;
 
-      if (method === "paystack") {
-        if (!reference) {
+      if (method === "flutterwave") {
+        const transactionId = searchParams.get("transaction_id");
+        if (!transactionId) {
           toast.error("Payment reference not found. Please try again.");
           setTimeout(() => navigate("/cart"), 2000);
           return;
         }
 
         response = await axios.post(
-          backendUrl + "/api/order/verifyPaystack",
-          { reference, orderId, userId: token },
+          backendUrl + "/api/order/verifyFlutterwave",
+          { transaction_id: transactionId, orderId, userId: token },
           { headers: { token } }
         );
 
@@ -72,7 +73,7 @@ const Verify = () => {
           <>
             <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-300 border-t-black mx-auto mb-6"></div>
             <p className="text-2xl font-semibold text-gray-800">Verifying Your Payment</p>
-            <p className="text-sm text-gray-500 mt-3">We're confirming your Paystack transaction...</p>
+            <p className="text-sm text-gray-500 mt-3">We're confirming your Flutterwave transaction...</p>
             <p className="text-xs text-gray-400 mt-2">This usually takes less than 10 seconds</p>
           </>
         ) : (

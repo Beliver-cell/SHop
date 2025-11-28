@@ -1,5 +1,5 @@
 import express from 'express'
-import { placeOrder, placeOrderPaystack, updateStatus, allOrders, userOrders, verifyPaystack } from '../controllers/orderController.js'
+import { placeOrder, placeOrderFlutterwave, updateStatus, allOrders, userOrders, verifyFlutterwave } from '../controllers/orderController.js'
 import adminAuth from '../middleware/adminAuth.js'
 import authUser from '../middleware/auth.js'
 
@@ -9,10 +9,10 @@ orderRouter.post('/list', adminAuth, allOrders)
 orderRouter.post('/status', adminAuth, updateStatus)
 
 orderRouter.post('/place', authUser, placeOrder)
-orderRouter.post('/paystack', authUser, placeOrderPaystack)
+orderRouter.post('/flutterwave', authUser, placeOrderFlutterwave)
 
 orderRouter.post('/userorders', authUser, userOrders)
 
-orderRouter.post('/verifyPaystack', authUser, verifyPaystack)
+orderRouter.post('/verifyFlutterwave', authUser, verifyFlutterwave)
 
 export default orderRouter;
