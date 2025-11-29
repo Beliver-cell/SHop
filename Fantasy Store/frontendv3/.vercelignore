@@ -1,6 +1,1 @@
-node_modules
 .git
-.env
-.env.local
-backendv3
-admin
