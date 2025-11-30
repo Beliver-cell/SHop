@@ -59,8 +59,12 @@ const Login = ({setToken}) => {
         catch (error){
             if (error.response?.data?.message) {
                 handleLoginFailure();
-            } else if (error.message === 'Network Error' || !backendUrl) {
-                toast.error('Network error: Backend server is not responding. Please try again.');
+            } else if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+                toast.error('Connection timeout. Backend server is slow. Please try again.');
+            } else if (error.message === 'Network Error' || error.code === 'ECONNREFUSED' || error.message.includes('ECONNREFUSED')) {
+                toast.error('Cannot connect to backend. Make sure backend is running.');
+            } else if (!backendUrl) {
+                toast.error('Backend URL not configured. Please set VITE_BACKEND_URL.');
             } else {
                 handleLoginFailure();
             }
