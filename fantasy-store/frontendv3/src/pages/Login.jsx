@@ -13,40 +13,43 @@ const Login = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (currState === "Sign Up") {
-        const response = await axios.post(backendUrl + "/api/user/register", {
-          name,
-          email,
-          password,
-        });
+      if (!backendUrl || backendUrl === 'undefined') {
+        toast.error("Backend URL not configured. Please refresh and try again.");
+        return;
+      }
 
-        if (response.data.success) {
+      const url = currState === "Sign Up" ? backendUrl + "/api/user/register" : backendUrl + "/api/user/login";
+      
+      const response = await axios.post(url, {
+        name: currState === "Sign Up" ? name : undefined,
+        email,
+        password,
+      }, {
+        timeout: 15000
+      });
+
+      if (response.data.success) {
+        if (currState === "Sign Up") {
           toast.success("Check your email for verification code");
           localStorage.setItem("pendingVerificationId", response.data.userId);
           navigate("/verify-email");
         } else {
-          toast.error(response.data.message);
-        }
-      } else {
-        const response = await axios.post(backendUrl + "/api/user/login", {
-          email,
-          password,
-        });
-
-        if (response.data.success) {
           setToken(response.data.token);
           localStorage.setItem("token", response.data.token);
-        } else {
-          toast.error(response.data.message);
+          toast.success("Login successful!");
         }
+      } else {
+        toast.error(response.data.message || "Request failed");
       }
     } catch (error) {
-      if (error.response?.status === 405) {
-        toast.error("Server error: Endpoint not found. Please try again.");
+      if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+        toast.error("Request timeout. Server is slow. Please try again.");
+      } else if (error.response?.status === 405) {
+        toast.error("Server error: Check backend configuration.");
       } else if (error.response?.data?.message) {
         toast.error(error.response.data.message);
-      } else if (!backendUrl) {
-        toast.error("Backend not configured. Check connection.");
+      } else if (error.message.includes('ECONNREFUSED')) {
+        toast.error("Cannot connect to backend. Make sure it's running.");
       } else {
         toast.error(error.message || "Request failed. Please try again.");
       }
