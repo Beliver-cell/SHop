@@ -185,7 +185,7 @@ const Placeorder = () => {
 
         <div className="mt-12">
           <Title text1={"PAYMENT"} text2={"METHOD"} />
-          {/* -----------Payment Method - Paystack Only */}
+          {/* -----------Payment Method - Flutterwave Only */}
           <div className="flex gap-3 flex-col">
             <div className="flex items-center gap-3 border-2 border-green-500 bg-green-50 p-4 px-5 rounded-lg">
               <div className="min-w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
@@ -197,11 +197,11 @@ const Placeorder = () => {
                 <svg className="h-6 w-6 text-green-600" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                 </svg>
-                <span className="text-gray-700 font-semibold text-base">Pay with Paystack</span>
+                <span className="text-gray-700 font-semibold text-base">Pay with Flutterwave</span>
               </div>
             </div>
             <p className="text-sm text-gray-500 mt-2">
-              Secure payment powered by Paystack. Pay with card, bank transfer, or USSD.
+              Secure payment powered by Flutterwave. Pay with card, bank transfer, or mobile money.
             </p>
           </div>
           <div className="w-full text-end mt-8">

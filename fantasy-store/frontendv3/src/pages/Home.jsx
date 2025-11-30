@@ -11,7 +11,7 @@ const Home = () => {
     <>
       <Helmet>
         <title>Fantasy Luxe - Premium Fashion & Luxury Shopping | Home</title>
-        <meta name="description" content="Welcome to Fantasy Luxe - Your destination for premium fashion, luxury accessories, and exclusive collections. Shop authentic designer products with secure Paystack payment." />
+        <meta name="description" content="Welcome to Fantasy Luxe - Your destination for premium fashion, luxury accessories, and exclusive collections. Shop authentic designer products with secure Flutterwave payment." />
         <meta name="keywords" content="luxury fashion, premium shopping, designer clothes, exclusive collection, fashion store, online boutique, Fantasy Luxe" />
         <link rel="canonical" href="https://fantasyluxe.com" />
         

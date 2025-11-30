@@ -9,8 +9,8 @@ const Chatbot = () => {
 
   const faqData = {
     'payment': {
-      keywords: ['payment', 'paystack', 'how to pay', 'pay', 'checkout'],
-      response: 'We accept secure payments through Paystack. At checkout, you\'ll see the Paystack payment option. You can pay with card, bank transfer, or USSD. Your transaction is 100% secure and encrypted.'
+      keywords: ['payment', 'flutterwave', 'how to pay', 'pay', 'checkout'],
+      response: 'We accept secure payments through Flutterwave. At checkout, you\'ll see the Flutterwave payment option. You can pay with card, bank transfer, or mobile money. Your transaction is 100% secure and encrypted.'
     },
     'shipping': {
       keywords: ['shipping', 'delivery', 'how long', 'when', 'track', 'tracking'],
