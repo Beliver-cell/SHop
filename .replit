@@ -69,6 +69,10 @@ externalPort = 8000
 localPort = 39855
 externalPort = 3000
 
+[[ports]]
+localPort = 41451
+externalPort = 3001
+
 [deployment]
 deploymentTarget = "vm"
 run = ["bash", "-c", "cd 'Fantasy Store/backendv3' && npm start"]
