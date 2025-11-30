@@ -41,7 +41,15 @@ const Login = () => {
         }
       }
     } catch (error) {
-      toast.error(error.message);
+      if (error.response?.status === 405) {
+        toast.error("Server error: Endpoint not found. Please try again.");
+      } else if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else if (!backendUrl) {
+        toast.error("Backend not configured. Check connection.");
+      } else {
+        toast.error(error.message || "Request failed. Please try again.");
+      }
     }
   };
 
