@@ -8,13 +8,32 @@ if (process.env.SENDGRID_API_KEY) {
 
 // Create nodemailer transporter for Gmail/SMTP fallback
 const createTransporter = () => {
-  return nodemailer.createTransport({
-    service: process.env.EMAIL_SERVICE || 'gmail',
+  const emailUser = process.env.EMAIL_USER;
+  const emailPass = process.env.EMAIL_PASSWORD || process.env.EMAIL_PASS;
+  const emailHost = process.env.EMAIL_HOST;
+  const emailPort = process.env.EMAIL_PORT;
+  
+  if (!emailUser || !emailPass) {
+    console.error('Email configuration missing: EMAIL_USER and EMAIL_PASSWORD/EMAIL_PASS required');
+    return null;
+  }
+  
+  const config = {
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD
+      user: emailUser,
+      pass: emailPass
     }
-  });
+  };
+  
+  if (emailHost && emailPort) {
+    config.host = emailHost;
+    config.port = parseInt(emailPort);
+    config.secure = emailPort === '465';
+  } else {
+    config.service = process.env.EMAIL_SERVICE || 'gmail';
+  }
+  
+  return nodemailer.createTransport(config);
 };
 
 export const generateOTP = () => {
@@ -50,23 +69,30 @@ export const sendVerificationOTP = async (email, otp) => {
       await sgMail.send({
         to: email,
         from: process.env.SENDGRID_FROM_EMAIL,
-        subject: '✉️ Your Fantasy Luxe Verification Code',
+        subject: 'Your Fantasy Luxe Verification Code',
         html: htmlContent
       });
+      console.log('Verification email sent via SendGrid to:', email);
       return true;
     }
 
     // Fallback to nodemailer (Gmail/SMTP)
     const transporter = createTransporter();
+    if (!transporter) {
+      console.error('Email transporter not configured');
+      return false;
+    }
+    
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: email,
-      subject: '✉️ Your Fantasy Luxe Verification Code',
+      subject: 'Your Fantasy Luxe Verification Code',
       html: htmlContent
     });
+    console.log('Verification email sent via SMTP to:', email);
     return true;
   } catch (error) {
-    console.error('Email error:', error);
+    console.error('Email error:', error.message);
     return false;
   }
 };
@@ -100,23 +126,30 @@ export const sendResetPasswordOTP = async (email, otp) => {
       await sgMail.send({
         to: email,
         from: process.env.SENDGRID_FROM_EMAIL,
-        subject: '🔑 Your Fantasy Luxe Password Reset Code',
+        subject: 'Your Fantasy Luxe Password Reset Code',
         html: htmlContent
       });
+      console.log('Password reset email sent via SendGrid to:', email);
       return true;
     }
 
     // Fallback to nodemailer (Gmail/SMTP)
     const transporter = createTransporter();
+    if (!transporter) {
+      console.error('Email transporter not configured');
+      return false;
+    }
+    
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: email,
-      subject: '🔑 Your Fantasy Luxe Password Reset Code',
+      subject: 'Your Fantasy Luxe Password Reset Code',
       html: htmlContent
     });
+    console.log('Password reset email sent via SMTP to:', email);
     return true;
   } catch (error) {
-    console.error('Email error:', error);
+    console.error('Email error:', error.message);
     return false;
   }
 };

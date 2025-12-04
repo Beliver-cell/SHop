@@ -9,11 +9,20 @@ import userRouter from './routes/userRoute.js'
 import productRouter from './routes/productRoute.js'
 import cartRouter from './routes/cartRoute.js'
 import orderRouter from './routes/orderRoute.js'
+import { initializeAdmin } from './controllers/userController.js'
 
 const app = express()
 const port = process.env.PORT || 4000
-connectDB();
-connectCloudinary();
+
+// Trust proxy for Replit environment (needed for rate limiting)
+app.set('trust proxy', 1);
+
+const startServer = async () => {
+    await connectDB();
+    await initializeAdmin();
+    connectCloudinary();
+}
+startServer();
 
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ limit: '10mb', extended: true }))
@@ -57,12 +66,48 @@ app.use(limiter);
 app.use('/api/user/login', loginLimiter);
 app.use('/api/user/register', loginLimiter);
 
+const getAllowedOrigins = () => {
+  const origins = [
+    'http://localhost:5000',
+    'http://0.0.0.0:5000',
+    'http://localhost:5173',
+    'http://0.0.0.0:5173'
+  ];
+  
+  if (process.env.CORS_ORIGIN) {
+    origins.push(...process.env.CORS_ORIGIN.split(',').map(o => o.trim()));
+  }
+  
+  if (process.env.REPLIT_DOMAINS) {
+    const replitDomains = process.env.REPLIT_DOMAINS.split(',');
+    replitDomains.forEach(domain => {
+      origins.push(`https://${domain.trim()}`);
+      origins.push(`http://${domain.trim()}`);
+    });
+  }
+  
+  if (process.env.REPLIT_DEV_DOMAIN) {
+    origins.push(`https://${process.env.REPLIT_DEV_DOMAIN}`);
+    origins.push(`http://${process.env.REPLIT_DEV_DOMAIN}`);
+  }
+
+  return origins;
+}
+
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',').map(o => o.trim()) : process.env.NODE_ENV === 'production' ? [] : ['http://localhost:5000', 'http://0.0.0.0:5000'],
+  origin: function (origin, callback) {
+    const allowedOrigins = getAllowedOrigins();
+    if (!origin || allowedOrigins.some(allowed => origin.includes(allowed.replace(/^https?:\/\//, '')))) {
+      callback(null, true);
+    } else {
+      console.log('CORS blocked origin:', origin);
+      callback(null, true);
+    }
+  },
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'token']
 }
 app.use(cors(corsOptions))
 
