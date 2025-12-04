@@ -1,0 +1,92 @@
+I need you to fix my entire authentication system. Both admin login and normal user login are not working.
+You must check EVERYTHING in my backend and frontend until it works 100%.
+Do not skip any step.
+Be strict and correct every mistake you see.
+
+Fix ALL of the following:
+
+Environment Variables
+
+Verify all required env vars exist:
+EMAIL_USER, EMAIL_PASS (App Password, not normal Gmail password),
+EMAIL_HOST, EMAIL_PORT,
+ADMIN_EMAIL, ADMIN_PASSWORD,
+JWT_SECRET,
+FRONTEND_URL,
+and any others my code expects.
+
+Make sure the env variable names in .env exactly match the names in the code.
+
+Make sure the Replit "Deploy" environment also contains these variables.
+
+Email Verification
+
+Fix the email sending logic.
+
+Confirm it uses the correct env vars and correct SMTP configuration.
+
+Make sure verification links contain the correct deployed backend URL.
+
+Make sure verified users can log in.
+
+Admin Account Logic
+
+Add a backend script that automatically creates the admin account from ADMIN_EMAIL and ADMIN_PASSWORD if it does not exist.
+
+Ensure the admin has role: "admin" and verified: true.
+
+Login Logic
+
+Fix normal user and admin login so it works without errors.
+
+Make sure it handles:
+
+email not found
+
+wrong password
+
+unverified accounts
+
+admin vs normal user distinction
+
+Ensure JWT is generated correctly.
+
+Backend Errors
+
+Fix any “configure your backend” or “missing config” messages.
+
+Make sure no required variable or setting is missing.
+
+Log clear errors if config is missing.
+
+Frontend Connection
+
+Ensure the frontend is using the correct API base URL.
+
+Fix CORS issues.
+
+Make sure login, register, verify, and admin login pages point to correct endpoints.
+
+Deployment
+
+Make sure both development and deployed environments use the same correct configuration.
+
+Fix any build or deploy issues preventing auth from working online.
+
+Final Deliverable:
+
+Fix all code directly.
+
+Create any missing files or scripts.
+
+Output a report explaining:
+
+what was broken,
+
+what you fixed,
+
+and what I need to update (like Gmail App Password).
+
+Test admin login and normal login to confirm everything works.
+
+Do not stop until authentication works perfectly.
