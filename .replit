@@ -55,6 +55,10 @@ task = "shell.exec"
 args = "cd \"fantasy-store/admin\" && npm run dev"
 
 [[ports]]
+localPort = 4000
+externalPort = 3003
+
+[[ports]]
 localPort = 5000
 externalPort = 80
 
@@ -70,6 +74,10 @@ externalPort = 8000
 localPort = 27017
 externalPort = 3001
 exposeLocalhost = true
+
+[[ports]]
+localPort = 35541
+externalPort = 3002
 
 [[ports]]
 localPort = 39855
