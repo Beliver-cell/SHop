@@ -9,8 +9,40 @@ const Contact = () => {
     <>
       <Helmet>
         <title>Contact Fantasy Luxe - Customer Support & Inquiries</title>
-        <meta name="description" content="Get in touch with Fantasy Luxe customer support team. We're here to help with any questions about orders, products, or services." />
-        <meta name="keywords" content="contact, customer support, help, inquiries, Fantasy Luxe" />
+        <meta name="description" content="Get in touch with Fantasy Luxe customer support team. We're here to help with any questions about orders, products, shipping, returns, or services. Fast response guaranteed." />
+        <meta name="keywords" content="contact Fantasy Luxe, customer support, help, inquiries, customer service, order help, shipping questions, returns, Fantasy Luxe support" />
+        <link rel="canonical" href="https://fantasyluxe.com/contact" />
+        
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Contact Fantasy Luxe - Customer Support" />
+        <meta property="og:description" content="Get in touch with Fantasy Luxe customer support team. We're here to help with any questions." />
+        <meta property="og:url" content="https://fantasyluxe.com/contact" />
+        <meta property="og:site_name" content="Fantasy Luxe" />
+        
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Contact Fantasy Luxe - Customer Support" />
+        <meta name="twitter:description" content="Get in touch with Fantasy Luxe customer support. We're here to help!" />
+        
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ContactPage",
+            "name": "Contact Fantasy Luxe",
+            "url": "https://fantasyluxe.com/contact",
+            "description": "Contact Fantasy Luxe customer support for help with orders, products, and services",
+            "mainEntity": {
+              "@type": "Organization",
+              "name": "Fantasy Luxe",
+              "url": "https://fantasyluxe.com",
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "contactType": "Customer Support",
+                "availableLanguage": "English",
+                "areaServed": "Worldwide"
+              }
+            }
+          })}
+        </script>
       </Helmet>
       
       <div>

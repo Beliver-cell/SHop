@@ -1,10 +1,51 @@
 import React from "react";
+import { Helmet } from "react-helmet-async";
 import Title from "../components/Title";
 import { assets } from "../assets/assets";
 import NewsLetter from "../components/NewsLetter";
+
 const About = () => {
+  const aboutSchema = {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    "name": "About Fantasy Luxe",
+    "url": "https://fantasyluxe.com/about",
+    "description": "Learn about Fantasy Luxe - Your premier destination for luxury fashion and accessories",
+    "mainEntity": {
+      "@type": "Organization",
+      "name": "Fantasy Luxe",
+      "description": "Premium luxury fashion and accessories store offering carefully curated collections",
+      "url": "https://fantasyluxe.com",
+      "foundingDate": "2024",
+      "slogan": "Pretty things for pretty souls",
+      "knowsAbout": ["Luxury Fashion", "Designer Clothing", "Premium Accessories", "Men's Fashion", "Women's Fashion", "Kids Fashion"]
+    }
+  };
+
   return (
-    <div>
+    <>
+      <Helmet>
+        <title>About Fantasy Luxe - Our Story, Mission & Values | Premium Fashion</title>
+        <meta name="description" content="Discover Fantasy Luxe's story - Your premier destination for luxury fashion. Learn about our commitment to quality, exceptional customer service, and carefully curated collections of premium fashion and accessories." />
+        <meta name="keywords" content="about Fantasy Luxe, luxury fashion store, premium clothing brand, fashion company, quality assurance, customer service, designer fashion, about us" />
+        <link rel="canonical" href="https://fantasyluxe.com/about" />
+        
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="About Fantasy Luxe - Our Story & Mission" />
+        <meta property="og:description" content="Discover Fantasy Luxe's commitment to quality and exceptional customer service in luxury fashion" />
+        <meta property="og:url" content="https://fantasyluxe.com/about" />
+        <meta property="og:site_name" content="Fantasy Luxe" />
+        
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="About Fantasy Luxe - Premium Fashion" />
+        <meta name="twitter:description" content="Learn about our commitment to quality and exceptional service in luxury fashion" />
+        
+        <script type="application/ld+json">
+          {JSON.stringify(aboutSchema)}
+        </script>
+      </Helmet>
+      
+      <div>
       <div className="text-2xl text-center pt-8 border-t">
         <Title text1={"ABOUT"} text2={"US"} />
       </div>
@@ -67,6 +108,7 @@ const About = () => {
 
       <NewsLetter/>
     </div>
+    </>
   );
 };
 

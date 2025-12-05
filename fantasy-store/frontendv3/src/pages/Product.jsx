@@ -37,8 +37,13 @@ const Product = () => {
       "description": productData.description,
       "image": productData.images,
       "sku": productData._id,
+      "mpn": productData._id,
       "brand": {
         "@type": "Brand",
+        "name": "Fantasy Luxe"
+      },
+      "manufacturer": {
+        "@type": "Organization",
         "name": "Fantasy Luxe"
       },
       "offers": {
@@ -46,18 +51,99 @@ const Product = () => {
         "url": `https://fantasyluxe.com/products/${productData._id}`,
         "priceCurrency": "NGN",
         "price": productData.price,
+        "priceValidUntil": new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         "availability": "https://schema.org/InStock",
+        "itemCondition": "https://schema.org/NewCondition",
         "seller": {
           "@type": "Organization",
-          "name": "Fantasy Luxe"
+          "name": "Fantasy Luxe",
+          "url": "https://fantasyluxe.com"
+        },
+        "shippingDetails": {
+          "@type": "OfferShippingDetails",
+          "shippingDestination": {
+            "@type": "DefinedRegion",
+            "addressCountry": "NG"
+          },
+          "deliveryTime": {
+            "@type": "ShippingDeliveryTime",
+            "handlingTime": {
+              "@type": "QuantitativeValue",
+              "minValue": 1,
+              "maxValue": 3,
+              "unitCode": "DAY"
+            },
+            "transitTime": {
+              "@type": "QuantitativeValue",
+              "minValue": 3,
+              "maxValue": 7,
+              "unitCode": "DAY"
+            }
+          }
+        },
+        "hasMerchantReturnPolicy": {
+          "@type": "MerchantReturnPolicy",
+          "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+          "merchantReturnDays": 7,
+          "returnMethod": "https://schema.org/ReturnByMail"
         }
       },
       "aggregateRating": {
         "@type": "AggregateRating",
         "ratingValue": "4.8",
-        "reviewCount": "122"
+        "bestRating": "5",
+        "worstRating": "1",
+        "reviewCount": "122",
+        "ratingCount": "122"
       },
-      "category": productData.category
+      "category": productData.category,
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Category",
+          "value": productData.category
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Type",
+          "value": productData.subCategory
+        }
+      ]
+    };
+  };
+
+  const generateBreadcrumbSchema = () => {
+    if (!productData) return null;
+    
+    return {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://fantasyluxe.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Collections",
+          "item": "https://fantasyluxe.com/collections"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": productData.category,
+          "item": `https://fantasyluxe.com/collections?category=${productData.category}`
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": productData.name,
+          "item": `https://fantasyluxe.com/products/${productData._id}`
+        }
+      ]
     };
   };
 
@@ -84,6 +170,9 @@ const Product = () => {
         
         <script type="application/ld+json">
           {JSON.stringify(generateProductSchema())}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(generateBreadcrumbSchema())}
         </script>
       </Helmet>
       

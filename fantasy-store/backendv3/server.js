@@ -128,6 +128,79 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'healthy', timestamp: new Date().toISOString() })
 })
 
+const escapeXml = (str) => {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+};
+
+app.get('/sitemap.xml', async (req, res) => {
+  try {
+    const productModel = (await import('./models/productModel.js')).default;
+    const products = await productModel.find({});
+    const baseUrl = process.env.FRONTEND_URL || 'https://fantasyluxe.com';
+    const today = new Date().toISOString().split('T')[0];
+    
+    let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>${escapeXml(baseUrl)}/</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>${escapeXml(baseUrl)}/collections</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>${escapeXml(baseUrl)}/about</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>${escapeXml(baseUrl)}/contact</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>`;
+
+    products.forEach(product => {
+      const productDate = product.date ? new Date(product.date).toISOString().split('T')[0] : today;
+      const escapedName = escapeXml(product.name);
+      const escapedImageUrl = product.images && product.images[0] ? escapeXml(product.images[0]) : '';
+      
+      sitemap += `
+  <url>
+    <loc>${escapeXml(baseUrl)}/products/${product._id}</loc>
+    <lastmod>${productDate}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    ${escapedImageUrl ? `<image:image>
+      <image:loc>${escapedImageUrl}</image:loc>
+      <image:title>${escapedName}</image:title>
+    </image:image>` : ''}
+  </url>`;
+    });
+
+    sitemap += '\n</urlset>';
+    
+    res.set('Content-Type', 'application/xml');
+    res.send(sitemap);
+  } catch (error) {
+    console.error('Sitemap generation error:', error);
+    res.status(500).send('Error generating sitemap');
+  }
+})
+
 app.use((err, req, res, next) => {
   if (process.env.NODE_ENV !== 'production') {
     console.error(err.stack);
