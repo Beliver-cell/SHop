@@ -24,6 +24,13 @@ The application is structured into three distinct services:
 - **Error Handling**: Graceful error handling is implemented for external services like MongoDB and Cloudinary to prevent application crashes and provide informative warnings.
 - **Automated Workflows**: Replit's always-on workflows are utilized to automatically run and manage the frontend, admin panel, and backend services.
 - **UI/UX**: The frontend and admin panel utilize Tailwind CSS for a utility-first approach to styling, ensuring a consistent and responsive design.
+- **SEO Implementation**: Comprehensive search engine optimization including:
+  - Meta tags with Open Graph and Twitter cards for all pages
+  - JSON-LD schema markup (Organization, Product, ContactPage, BreadcrumbList)
+  - Dynamic XML sitemap with proper escaping for special characters
+  - robots.txt with permissions for AI crawlers (GPTBot, Claude-Web, etc.)
+  - Page-specific canonical URLs and structured data
+  - Product pages with rich snippets for enhanced search visibility
 
 **Folder Structure:**
 - `frontendv3/`: Contains the customer-facing store.
